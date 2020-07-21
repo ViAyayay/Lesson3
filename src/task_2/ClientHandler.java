@@ -94,11 +94,21 @@ public class ClientHandler {
                 if (strFromClient.equals("/end")){
                     break;
                 }
-                if ((strFromClient.startsWith("/w "))){
+                if (strFromClient.startsWith("/w ")){
                     String[] tokens = strFromClient.split("\\s");
                     String nick = tokens[1];
                     String msg = strFromClient.substring(4 + nick.length());
                     myServer.sendPrivateMsg(this, nick, msg);
+                }
+                if (strFromClient.startsWith("/chnick ")){
+                    String[] tokens = strFromClient.split("\\s");
+                    String newNick = myServer.getAuthService().changeNick(name, tokens[1]);
+                    if(newNick == null){
+                        sendMsg("/cnfail");
+                    }else {
+                        name = newNick;
+                        sendMsg("/cnok "+name);
+                    }
                 }
                 continue;
             }
