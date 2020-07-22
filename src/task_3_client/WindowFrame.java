@@ -130,6 +130,7 @@ public class WindowFrame extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 outMsg(enterTextField.getText());
+                enterTextField.setText("");
             }
         };
         insertButton.addActionListener(ActList);
