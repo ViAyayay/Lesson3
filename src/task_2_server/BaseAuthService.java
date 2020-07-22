@@ -1,4 +1,4 @@
-package task_2;
+package task_2_server;
 
 import java.sql.*;
 
