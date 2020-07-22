@@ -49,7 +49,8 @@ public class ClientHandler {
                     }
                     readMessages();
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    System.out.println("disconnect");
+//                    e.printStackTrace();
                 } finally {
                     closeConnection();
                 }
@@ -62,7 +63,6 @@ public class ClientHandler {
 
     public void authentication() throws IOException{
         while (true){
-            System.out.println(2);
             String str = in.readUTF();
 //            socket.setSoTimeout(120 * 1000);
             if(str.startsWith("/auth")){

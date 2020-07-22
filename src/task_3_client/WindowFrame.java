@@ -126,21 +126,16 @@ public class WindowFrame extends JFrame {
     private void getEnterField(JPanel panel, JTextArea jta) {
         JTextField enterTextField = new JTextField();
         JButton insertButton = new JButton("Insert");
-//        insertButton.addActionListener(new ButtonListener(enterTextField, jta,out));
-        insertButton.addActionListener(new ActionListener() {
+        ActionListener ActList = new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 outMsg(enterTextField.getText());
             }
-        });
+        };
+        insertButton.addActionListener(ActList);
         panel.setLayout((new BorderLayout()));
         panel.add(enterTextField, BorderLayout.CENTER);
-        enterTextField.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                outMsg(enterTextField.getText());
-            }
-        });
+        enterTextField.addActionListener(ActList);
         panel.add(insertButton, BorderLayout.AFTER_LINE_ENDS);
         panel.setEnabled(false);
         add(panel, BorderLayout.PAGE_END);
