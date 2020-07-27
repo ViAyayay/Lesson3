@@ -7,7 +7,7 @@ public class BaseAuthService implements AuthService{
     Statement stmt;
     PreparedStatement ps = null;
 
-    public String changeNick(String nick, String newNick){
+    public synchronized String changeNick(String nick, String newNick){
         try {
             String sqlRead = String.format("UPDATE Entries SET Nick = '%s' WHERE Nick = '%s' ", newNick, nick);
             stmt.executeUpdate(sqlRead);
@@ -33,7 +33,7 @@ public class BaseAuthService implements AuthService{
     }
 
     @Override
-    public String getNickByLoginPass(String login, String pass) {
+    public synchronized String getNickByLoginPass(String login, String pass) {
         String sqlRead = String.format("SELECT * FROM Entries WHERE login = '%s' AND pass = '%s'", login, pass);
         try(ResultSet rs = stmt.executeQuery(sqlRead)){
             return rs.getString("Nick");

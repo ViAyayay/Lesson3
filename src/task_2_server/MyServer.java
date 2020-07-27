@@ -5,12 +5,15 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class MyServer {
 
     private final int port;
     private List<ClientHandler> clients;
     private AuthService authService;
+    private ExecutorService executor = Executors.newCachedThreadPool();
 
     public AuthService getAuthService(){
         return authService;
@@ -37,6 +40,7 @@ public class MyServer {
             System.out.println("Ошибка в работе сервера");
         }finally {
             if(authService != null){
+//                executor.shutdownNow();
                 authService.stop();
             }
         }
@@ -74,6 +78,10 @@ public class MyServer {
 
     public synchronized void subscribe(ClientHandler clientHandler){
         clients.add(clientHandler);
+    }
+
+    public ExecutorService getExecutor() {
+        return executor;
     }
 }
 
