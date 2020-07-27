@@ -4,15 +4,14 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.net.Socket;
 
 public class WindowFrame extends JFrame {
     private final DataInputStream in;
     private final DataOutputStream out;
     private boolean isAuth = false;
+    String name = "";
     JTextArea jta = new JTextArea();
 
     public WindowFrame(DataInputStream in, DataOutputStream out){
@@ -34,19 +33,41 @@ public class WindowFrame extends JFrame {
                     while (true) {
                         String strFromServer = in.readUTF();
                         if(strFromServer.startsWith("/authok")) {
+                            String[] parts = strFromServer.split("\\s");
+                            name = parts[1];
                             setAuthorized(true);
                             break;
                         }
                         jta.append(strFromServer + "\n");
                     }
+
+                    File history = new File("history_"+name+".txt");
+                    readHistory(history);
+
                     while (true) {
                         String strFromServer = in.readUTF();
                         if (strFromServer.equalsIgnoreCase("/end")) {
                             break;
                         }
+                        if (strFromServer.startsWith("/cnok ")){
+                            String[] part = strFromServer.split("\\s");
+                            File newFile = new File("history_"+part[1]+".txt");
+                            if(history.renameTo(newFile)){
+                                name = part[1];
+                                history = newFile;
+                                continue;
+                            }else{
+                                break;
+                            }
+                        }
+                        try(BufferedWriter writer = new BufferedWriter(new FileWriter(history, true))) {
+                            writer.write(strFromServer+"\n");
+                        }
+
                         jta.append(strFromServer);
                         jta.append("\n");
                     }
+
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -54,6 +75,31 @@ public class WindowFrame extends JFrame {
         });
         t.setDaemon(true);
         t.start();
+    }
+
+    private void readHistory(File history){
+        StringBuilder sb = new StringBuilder();
+        try(RandomAccessFile raf=new RandomAccessFile(history, "r")){
+            long seek = raf.length()-1;
+            int number =0;
+            while (seek>=0){
+                raf.seek(seek);
+                char symbol = (char)raf.read();
+                if(symbol=='\n'){
+                    number++;
+                    if(number>100){
+                        break;
+                    }
+                }
+                sb.append(symbol);
+                seek -=1;
+            }
+            sb.reverse();
+            jta.setText(sb.toString());
+            sb=null;
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     private void setAuthorized(boolean b) {
