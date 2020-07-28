@@ -10,12 +10,14 @@ public class Tunnel extends Stage {
         try {
             try {
                 System.out.println(car.getName() + " готовится к этапу(ждет): " + description);
+                MoveController.tunnelControl.acquire();
                 System.out.println(car.getName() + " начал этап: " + description);
                 Thread.sleep(length / car.getSpeed() * 1000);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             } finally {
                 System.out.println(car.getName() + " закончил этап: " + description);
+                MoveController.tunnelControl.release();
             }
         } catch (Exception e) {
             e.printStackTrace();
