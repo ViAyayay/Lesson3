@@ -3,7 +3,6 @@ package task_2_server;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.io.InterruptedIOException;
 import java.net.Socket;
 
 public class ClientHandler {
@@ -25,8 +24,7 @@ public class ClientHandler {
             this.in = new DataInputStream(socket.getInputStream());
             this.out = new DataOutputStream(socket.getOutputStream());
             this.name = "";
-//            socket.setSoTimeout(120*1000);
-            new Thread(() ->{
+            myServer.getExecutor().execute(() ->{
                 try {
                     Thread thread = new Thread(new Runnable() {
                         @Override
@@ -38,6 +36,7 @@ public class ClientHandler {
                             }
                         }
                     });
+                    thread.setDaemon(true);
                     thread.start();
                     long endTimeMillis = System.currentTimeMillis() + (120 *1000);
                     while (thread.isAlive()) {
@@ -55,7 +54,7 @@ public class ClientHandler {
                     closeConnection();
                 }
 
-            }).start();
+            });
         }catch (IOException e){
             throw new RuntimeException("Проблемы при создании обработчика клиента");
         }
